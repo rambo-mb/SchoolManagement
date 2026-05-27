@@ -20,6 +20,7 @@ public class App
 			Console.WriteLine("===== SCHOOL MANAGEMENT =====");
 			Console.WriteLine("1. Show teachers");
 			Console.WriteLine("2. Create teacher");
+			Console.WriteLine("3. Show teacher by ID");
 			Console.WriteLine("0. Exit");
 			Console.Write("\nChoose an option: ");
 			
@@ -37,6 +38,11 @@ public class App
 						HandleCreate();
 						break;
 					}
+				case "3":
+					{
+						HandleReadById();
+						break;
+					}
 				case "0":
 					{
 						return;
@@ -48,6 +54,28 @@ public class App
 					}
 			}
 		}
+	}
+
+	private void HandleReadById()
+	{
+		Console.Clear();
+		Console.Write("Enter teacher ID: ");
+		int teacherId = Convert.ToInt32(Console.ReadLine());
+
+		Teacher teacher = Service.GetTeacherById(teacherId);
+
+		if (teacher is null)
+		{
+			Console.Clear();
+
+			Console.WriteLine("Teachers not found");
+			HandleContinue();
+			return;
+		}
+
+		Service.PrintInfo(teacher);
+		HandleContinue();
+
 	}
 
 	private void HandleReadAll()
@@ -83,6 +111,8 @@ public class App
 		string userLastName = Console.ReadLine();
 		Console.Write("Enter address: ");
 		string userAddress = Console.ReadLine();
+		Console.WriteLine("Teacher created successfully");
+
 
 		var newTeacher = new Teacher()
 		{

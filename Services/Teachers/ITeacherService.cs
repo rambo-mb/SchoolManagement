@@ -9,4 +9,6 @@ public interface ITeacherService
 	void CreateTeacher(Teacher teacher);
 
 	void PrintInfo(Teacher teacher);
+
+	Teacher GetTeacherById(int id);
 }
