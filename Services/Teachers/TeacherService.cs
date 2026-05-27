@@ -4,28 +4,41 @@ namespace SchoolManagement.Services.Teachers;
 
 public class TeacherService : ITeacherService
 {
-	public static int teachersAmount = 10;
+	private const int teachersAmount = 10;
+	private int count = 0;
 
-	public static int count = 0;
-
-	Teacher[] teachers = new Teacher[teachersAmount];
+	private Teacher[] teachers = new Teacher[teachersAmount];
 
 	public void CreateTeacher(Teacher teacher)
 	{
+		if(count >= teachersAmount)
+		{
+			Console.WriteLine("Teachers are full");
+			return;
+		}
+		teacher.Id = count + 1;
 		teachers[count] = teacher;
 		count++;
 	}
 
 	public Teacher[] GetAllTeachers()
 	{
-		return teachers;
+		Teacher[] result = new Teacher[count];
+		for (int i = 0; i < count; i++)
+		{
+				result[i] = teachers[i];
+		}
+		return result;
 	}
 
 	public Teacher GetTeacherById(int id)
 	{
-		if(teachersAmount < id) return null;
-
-		return teachers[id-1];
+		foreach (Teacher teacher in teachers)
+		{
+			if (teacher is null) continue;
+			if (teacher.Id == id) return teacher;
+		}
+		return null;
 	}
 
 	public void PrintInfo(Teacher teacher)

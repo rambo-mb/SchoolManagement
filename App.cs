@@ -5,11 +5,11 @@ namespace SchoolManagement;
 
 public class App
 {
-	private ITeacherService Service { get; set; }
+	private readonly ITeacherService _service;
 
 	public App(ITeacherService service)
 	{
-		this.Service = service;
+		this._service = service;
 	}
 
 	public void Run()
@@ -29,29 +29,19 @@ public class App
 			switch(userInput)
 			{
 				case "1":
-					{
-						HandleReadAll();
-						break;
-					}
+					HandleReadAll();
+					break;
 				case "2":
-					{
-						HandleCreate();
-						break;
-					}
+					HandleCreate();
+					break;
 				case "3":
-					{
-						HandleReadById();
-						break;
-					}
-				case "0":
-					{
-						return;
-					}
+					HandleReadById();
+					break;
+				case "0": return;
 				default:
-					{
-						Console.WriteLine("Error");
-						break;
-					}
+					Console.WriteLine("Invalid option, try again");
+					HandleContinue();
+					break;
 			}
 		}
 	}
@@ -59,30 +49,40 @@ public class App
 	private void HandleReadById()
 	{
 		Console.Clear();
-		Console.Write("Enter teacher ID: ");
-		int teacherId = Convert.ToInt32(Console.ReadLine());
 
-		Teacher teacher = Service.GetTeacherById(teacherId);
+		int teacherId;
+		bool isValid;
+		do
+		{
+				Console.Write("Enter teacher ID: ");
+				string input = Console.ReadLine();
+				isValid = int.TryParse(input, out teacherId) && teacherId > 0;
+				
+				if (!isValid) Console.WriteLine("Invalid ID, try again");
+		}
+		while (!isValid);
+
+		Teacher teacher = _service.GetTeacherById(teacherId);
 
 		if (teacher is null)
 		{
 			Console.Clear();
 
-			Console.WriteLine("Teachers not found");
+			Console.WriteLine("Teacher with this ID not found");
 			HandleContinue();
 			return;
 		}
 
-		Service.PrintInfo(teacher);
+		_service.PrintInfo(teacher);
 		HandleContinue();
 
 	}
 
 	private void HandleReadAll()
 	{
-		Teacher[] teachers = Service.GetAllTeachers();
+		Teacher[] teachers = _service.GetAllTeachers();
 
-		if (teachers[0] is null)
+		if (teachers is null || teachers.Length == 0)
 		{
 			Console.Clear();
 
@@ -95,7 +95,7 @@ public class App
 
 		foreach(Teacher teacher in teachers)
 		{
-			Service.PrintInfo(teacher);
+			_service.PrintInfo(teacher);
 		}
 
 		HandleContinue();
@@ -111,19 +111,17 @@ public class App
 		string userLastName = Console.ReadLine();
 		Console.Write("Enter address: ");
 		string userAddress = Console.ReadLine();
-		Console.WriteLine("Teacher created successfully");
-
 
 		var newTeacher = new Teacher()
 		{
-			Id = TeacherService.count + 1,
 			FirstName = userFirstName,
 			LastName = userLastName,
 			Address = userAddress
 		};
 
-		Service.CreateTeacher(newTeacher);
+		_service.CreateTeacher(newTeacher);
 
+		Console.WriteLine("Teacher created successfully");  
 		HandleContinue();
 	}
 
